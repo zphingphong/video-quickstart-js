@@ -100,6 +100,15 @@ $.getJSON('/token', function(data) {
     log('Leaving room...');
     activeRoom.disconnect();
   };
+
+  // Bind button to mute.
+  document.getElementById('button-mute').onclick = function() {
+    log('Mute audio...');
+    activeRoom.localParticipant.audioTracks.forEach(function(audioTrack) {
+      log('+++++ audioTrack ' + audioTrack + ' +++++');
+      audioTrack.disable();
+    });
+  };
 });
 
 // Get the Participant's Tracks.
