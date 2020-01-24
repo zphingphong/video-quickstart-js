@@ -1,6 +1,7 @@
 'use strict';
 
 var Video = require('twilio-video');
+const dataTrack = new Video.LocalDataTrack();
 
 var activeRoom;
 var previewTracks;
@@ -81,6 +82,7 @@ $.getJSON('/token', function(data) {
     log("Joining room '" + roomName + "'...");
     var connectOptions = {
       name: roomName,
+      tracks: [dataTrack],
       logLevel: 'debug'
     };
 
