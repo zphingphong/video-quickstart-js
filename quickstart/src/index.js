@@ -166,9 +166,7 @@ function roomJoined(room) {
 document.getElementById('button-preview').onclick = function() {
   var localTracksPromise = previewTracks
     ? Promise.resolve(previewTracks)
-    : Video.createLocalTracks({
-      audio: false
-    });
+    : Video.createLocalTracks();
 
   localTracksPromise.then(function(tracks) {
     window.previewTracks = previewTracks = tracks;
