@@ -106,7 +106,7 @@ $.getJSON('/token', function(data) {
     log('Mute audio...');
     activeRoom.localParticipant.audioTracks.forEach(function(audioTrack) {
       log('+++++ audioTrack ' + audioTrack + ' +++++');
-      audioTrack.disable();
+      audioTrack.track.disable();
     });
   };
 });
