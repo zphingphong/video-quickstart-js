@@ -82,19 +82,24 @@ $.getJSON('/token', function(data) {
     log("Joining room '" + roomName + "'...");
     var connectOptions = {
       name: roomName,
-      tracks: previewTracks.concat(dataTrack),
       logLevel: 'debug'
     };
 
     if (previewTracks) {
-      connectOptions.tracks = previewTracks;
+      connectOptions.tracks = previewTracks.concat(dataTrack);
+      Video.connect(data.token, connectOptions).then(roomJoined, function (error) {
+        log('Could not connect to Twilio: ' + error.message);
+      });
+    } else {
+      Video.createLocalTracks().then(tracks => {
+        connectOptions.tracks = tracks.concat(dataTrack);
+        // Join the Room with the token from the server and the
+        // LocalParticipant's Tracks.
+        Video.connect(data.token, connectOptions).then(roomJoined, function (error) {
+          log('Could not connect to Twilio: ' + error.message);
+        });
+      });
     }
-
-    // Join the Room with the token from the server and the
-    // LocalParticipant's Tracks.
-    Video.connect(data.token, connectOptions).then(roomJoined, function(error) {
-      log('Could not connect to Twilio: ' + error.message);
-    });
   };
 
   // Bind button to leave Room.
@@ -181,9 +186,7 @@ function roomJoined(room) {
 document.getElementById('button-preview').onclick = function() {
   var localTracksPromise = previewTracks
     ? Promise.resolve(previewTracks)
-    : Video.createLocalTracks({
-      video: { width: 640 }
-    });
+    : Video.createLocalTracks();
 
   localTracksPromise.then(function(tracks) {
     window.previewTracks = previewTracks = tracks;
