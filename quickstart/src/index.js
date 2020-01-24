@@ -103,10 +103,14 @@ $.getJSON('/token', function(data) {
 
   // Bind button to mute.
   document.getElementById('button-mute').onclick = function() {
-    log('Mute audio...');
     activeRoom.localParticipant.audioTracks.forEach(function(audioTrack) {
-      log('+++++ audioTrack ' + audioTrack + ' +++++');
-      audioTrack.track.disable();
+      if(audioTrack.isTrackEnabled){
+        log('Mute audio...');
+        audioTrack.track.disable();
+      } else {
+        log('Unmute audio...');
+        audioTrack.track.enable();
+      }
     });
   };
 });
