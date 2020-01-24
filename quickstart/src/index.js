@@ -82,7 +82,7 @@ $.getJSON('/token', function(data) {
     log("Joining room '" + roomName + "'...");
     var connectOptions = {
       name: roomName,
-      tracks: [dataTrack],
+      tracks: previewTracks.concat(dataTrack),
       logLevel: 'debug'
     };
 
