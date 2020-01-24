@@ -61,6 +61,5 @@
     "npm-run-all": "^4.0.2",
     "rimraf": "^2.6.1"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }
