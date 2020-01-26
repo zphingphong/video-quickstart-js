@@ -91,6 +91,14 @@ $.getJSON('/token', function(data) {
     canvas.height = window.innerHeight;
   });
 
+  document.getElementById('button-close').onclick = function() {
+    if(activeRoom){
+      $.getJSON(`/close/${activeRoom.sid}`, function(data) {
+
+      }
+    }
+  };
+
   // Bind button to join Room.
   document.getElementById('button-join').onclick = function() {
     roomName = document.getElementById('room-name').value;
@@ -116,16 +124,13 @@ $.getJSON('/token', function(data) {
 
       window.addEventListener('mousedown', () => {
         mouseDown = true;
-        console.log('down');
       }, false);
 
       window.addEventListener('mouseup', () => {
         mouseDown = false;
-        console.log('up');
       }, false);
 
       window.addEventListener('mousemove', event => {
-        console.log('move');
         const { pageX: x, pageY: y } = event;
         mouseCoordinates = { x, y };
 
@@ -212,6 +217,8 @@ function roomJoined(room) {
     log("RemoteParticipant '" + participant.identity + "' left the room");
     detachParticipantTracks(participant);
   });
+
+  window.onbeforeunload = leaveRoomIfJoined;
 
   // Once the LocalParticipant leaves the room, detach the Tracks
   // of all Participants, including that of the LocalParticipant.

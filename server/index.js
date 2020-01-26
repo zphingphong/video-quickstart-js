@@ -12,6 +12,8 @@ require('dotenv').load();
 var http = require('http');
 var path = require('path');
 var AccessToken = require('twilio').jwt.AccessToken;
+var Twilio  = require('twilio');
+var client = new Twilio(process.env.TWILIO_API_KEY, process.env.TWILIO_API_SECRET, process.env.TWILIO_ACCOUNT_SID);
 var VideoGrant = AccessToken.VideoGrant;
 var express = require('express');
 var randomName = require('./randomname');
@@ -82,6 +84,16 @@ app.get('/token', function(request, response) {
     identity: identity,
     token: token.toJwt()
   });
+});
+
+app.get('/close/:roomId', function(request, response) {
+  try {
+    await client.video.rooms(request.params.roomId).update({status: 'completed'});
+    res.status(200).end()
+  } catch (error) {
+    console.error(error.stack)
+    res.status(500).send(error)
+  }
 });
 
 // Create http server and run it.
