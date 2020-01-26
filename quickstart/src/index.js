@@ -94,8 +94,8 @@ $.getJSON('/token', function(data) {
   document.getElementById('button-close').onclick = function() {
     if(activeRoom){
       $.getJSON(`/close/${activeRoom.sid}`, function(data) {
-
-      }
+        console.log('Rooom closed');
+      });
     }
   };
 

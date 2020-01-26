@@ -13,7 +13,7 @@ var http = require('http');
 var path = require('path');
 var AccessToken = require('twilio').jwt.AccessToken;
 var Twilio  = require('twilio');
-var client = new Twilio(process.env.TWILIO_API_KEY, process.env.TWILIO_API_SECRET, process.env.TWILIO_ACCOUNT_SID);
+var client;
 var VideoGrant = AccessToken.VideoGrant;
 var express = require('express');
 var randomName = require('./randomname');
@@ -79,6 +79,8 @@ app.get('/token', function(request, response) {
   var grant = new VideoGrant();
   token.addGrant(grant);
 
+  client = new Twilio(process.env.TWILIO_ACCOUNT_SID, token);
+
   // Serialize the token to a JWT string and include it in a JSON response.
   response.send({
     identity: identity,
@@ -86,14 +88,10 @@ app.get('/token', function(request, response) {
   });
 });
 
-app.get('/close/:roomId', function(request, response) {
-  try {
-    await client.video.rooms(request.params.roomId).update({status: 'completed'});
+app.get('/close/:roomId', function(request, res) {
+  client.video.rooms(request.params.roomId).update({status: 'completed'}).then(room => {
     res.status(200).end();
-  } catch (error) {
-    console.error(error.stack);
-    res.status(500).send(error);
-  }
+  });
 });
 
 // Create http server and run it.
