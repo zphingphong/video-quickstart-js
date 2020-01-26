@@ -89,8 +89,12 @@ app.get('/token', function(request, response) {
 });
 
 app.get('/close/:roomId', function(request, res) {
-  client.video.rooms(request.params.roomId).update({status: 'completed'}).then(room => {
-    res.status(200).end();
+  client.video.rooms(request.params.roomId).update({status: 'completed'}, (err, room) => {
+    if(err) {
+      res.status(500).send(err.toString());
+    } else {
+      res.status(200).end();
+    }
   });
 });
 
