@@ -22,6 +22,10 @@ body {
   background: #272726;
 }
 
+canvas {
+  background: white;
+}
+
 div#remote-media {
   height: 43%;
   width: 100%;

@@ -1,17 +1,29 @@
 'use strict';
 
 var Video = require('twilio-video');
+const colorHash = new (require('color-hash'))();
 const dataTrack = new Video.LocalDataTrack();
 
 var activeRoom;
 var previewTracks;
 var identity;
 var roomName;
+var canvas;
 
 
 // Attach the Track to the DOM.
 function attachTrack(track, container) {
-  container.appendChild(track.attach());
+  if (track.kind === 'audio' || track.kind === 'video') {
+    container.appendChild(track.attach());
+  } else if (track.kind === 'data') {
+    const color = colorHash.hex(track.id);
+    track.on('message', data => {
+      const { mouseDown, mouseCoordinates: { x, y } } = JSON.parse(data);
+      if (mouseDown) {
+        drawCircle(canvas, color, x, y);
+      }
+    });
+  }
 }
 
 // Attach array of Tracks to the DOM.
@@ -71,6 +83,14 @@ $.getJSON('/token', function(data) {
   identity = data.identity;
   document.getElementById('room-controls').style.display = 'block';
 
+  canvas = document.getElementById('canvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
   // Bind button to join Room.
   document.getElementById('button-join').onclick = function() {
     roomName = document.getElementById('room-name').value;
@@ -91,6 +111,35 @@ $.getJSON('/token', function(data) {
         log('Could not connect to Twilio: ' + error.message);
       });
     } else {
+      let mouseDown;
+      let mouseCoordinates;
+
+      window.addEventListener('mousedown', () => {
+        mouseDown = true;
+        console.log('down');
+      }, false);
+
+      window.addEventListener('mouseup', () => {
+        mouseDown = false;
+        console.log('up');
+      }, false);
+
+      window.addEventListener('mousemove', event => {
+        console.log('move');
+        const { pageX: x, pageY: y } = event;
+        mouseCoordinates = { x, y };
+
+        if (mouseDown) {
+          const color = colorHash.hex(dataTrack.id);
+          drawCircle(canvas, color, x, y);
+
+          dataTrack.send(JSON.stringify({
+            mouseDown,
+            mouseCoordinates
+          }));
+        }
+      }, false);
+
       Video.createLocalTracks().then(tracks => {
         connectOptions.tracks = tracks.concat(dataTrack);
         // Join the Room with the token from the server and the
@@ -212,4 +261,28 @@ function leaveRoomIfJoined() {
   if (activeRoom) {
     activeRoom.disconnect();
   }
+}
+
+/**
+ * Draw a circle on the <canvas> element.
+ * @param {HTMLCanvasElement} canvas
+ * @param {string} color
+ * @param {number} x
+ * @param {number} y
+ * @returns {void}
+ */
+function drawCircle(canvas, color, x, y) {
+  const context = canvas.getContext('2d');
+  context.beginPath();
+  context.arc(
+    x,
+    y,
+    10,
+    0,
+    2 * Math.PI,
+    false);
+  context.fillStyle = color;
+  context.fill();
+  context.strokeStyle = '#000000';
+  context.stroke();
 }
