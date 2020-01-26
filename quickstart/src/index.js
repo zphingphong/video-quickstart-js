@@ -113,38 +113,38 @@ $.getJSON('/token', function(data) {
       logLevel: 'debug'
     };
 
+    let mouseDown;
+    let mouseCoordinates;
+
+    window.addEventListener('mousedown', () => {
+      mouseDown = true;
+    }, false);
+
+    window.addEventListener('mouseup', () => {
+      mouseDown = false;
+    }, false);
+
+    window.addEventListener('mousemove', event => {
+      const { pageX: x, pageY: y } = event;
+      mouseCoordinates = { x, y };
+
+      if (mouseDown) {
+        const color = colorHash.hex(dataTrack.id);
+        drawCircle(canvas, color, x, y);
+
+        dataTrack.send(JSON.stringify({
+          mouseDown,
+          mouseCoordinates
+        }));
+      }
+    }, false);
+
     if (previewTracks) {
       connectOptions.tracks = previewTracks.concat(dataTrack);
       Video.connect(data.token, connectOptions).then(roomJoined, function (error) {
         log('Could not connect to Twilio: ' + error.message);
       });
     } else {
-      let mouseDown;
-      let mouseCoordinates;
-
-      window.addEventListener('mousedown', () => {
-        mouseDown = true;
-      }, false);
-
-      window.addEventListener('mouseup', () => {
-        mouseDown = false;
-      }, false);
-
-      window.addEventListener('mousemove', event => {
-        const { pageX: x, pageY: y } = event;
-        mouseCoordinates = { x, y };
-
-        if (mouseDown) {
-          const color = colorHash.hex(dataTrack.id);
-          drawCircle(canvas, color, x, y);
-
-          dataTrack.send(JSON.stringify({
-            mouseDown,
-            mouseCoordinates
-          }));
-        }
-      }, false);
-
       Video.createLocalTracks().then(tracks => {
         connectOptions.tracks = tracks.concat(dataTrack);
         // Join the Room with the token from the server and the
@@ -279,17 +279,16 @@ function leaveRoomIfJoined() {
  * @returns {void}
  */
 function drawCircle(canvas, color, x, y) {
+  let rect = canvas.getBoundingClientRect();
   const context = canvas.getContext('2d');
   context.beginPath();
   context.arc(
-    x,
-    y,
+    x - rect.left - document.documentElement.scrollLeft,
+    y - rect.top - document.documentElement.scrollTop,
     10,
     0,
     2 * Math.PI,
     false);
   context.fillStyle = color;
   context.fill();
-  context.strokeStyle = '#000000';
-  context.stroke();
 }
