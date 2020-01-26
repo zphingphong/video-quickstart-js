@@ -13,7 +13,7 @@ var http = require('http');
 var path = require('path');
 var AccessToken = require('twilio').jwt.AccessToken;
 var Twilio  = require('twilio');
-var client;
+var client = new Twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 var VideoGrant = AccessToken.VideoGrant;
 var express = require('express');
 var randomName = require('./randomname');
@@ -78,8 +78,6 @@ app.get('/token', function(request, response) {
   // Grant the access token Twilio Video capabilities.
   var grant = new VideoGrant();
   token.addGrant(grant);
-
-  client = new Twilio(process.env.TWILIO_ACCOUNT_SID, token);
 
   // Serialize the token to a JWT string and include it in a JSON response.
   response.send({
