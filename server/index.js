@@ -19,7 +19,7 @@ var express = require('express');
 var randomName = require('./randomname');
 
 // Max. period that a Participant is allowed to be in a Room (currently 14400 seconds or 4 hours)
-const MAX_ALLOWED_SESSION_DURATION = 14400;
+const MAX_ALLOWED_SESSION_DURATION = 600;
 
 // Create Express webapp.
 var app = express();
@@ -89,10 +89,10 @@ app.get('/token', function(request, response) {
 app.get('/close/:roomId', function(request, response) {
   try {
     await client.video.rooms(request.params.roomId).update({status: 'completed'});
-    res.status(200).end()
+    res.status(200).end();
   } catch (error) {
-    console.error(error.stack)
-    res.status(500).send(error)
+    console.error(error.stack);
+    res.status(500).send(error);
   }
 });
 
