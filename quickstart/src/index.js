@@ -84,11 +84,11 @@ $.getJSON('/token', function(data) {
   document.getElementById('room-controls').style.display = 'block';
 
   canvas = document.getElementById('canvas');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
   window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
   });
 
   document.getElementById('button-close').onclick = function() {
@@ -125,7 +125,7 @@ $.getJSON('/token', function(data) {
     }, false);
 
     window.addEventListener('mousemove', event => {
-      const { pageX: x, pageY: y } = event;
+      const { offsetX: x, offsetY: y } = event;
       mouseCoordinates = { x, y };
 
       if (mouseDown) {
@@ -283,8 +283,8 @@ function drawCircle(canvas, color, x, y) {
   const context = canvas.getContext('2d');
   context.beginPath();
   context.arc(
-    x - rect.left - document.documentElement.scrollLeft,
-    y - rect.top - document.documentElement.scrollTop,
+    x,
+    y,
     10,
     0,
     2 * Math.PI,
