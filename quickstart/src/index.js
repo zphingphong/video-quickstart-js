@@ -29,8 +29,8 @@ function attachTrack(track, container) {
       // }));
     });
     newParticipantEl.appendChild(cv[0]);
-    cv[0].width = cv[0].clientWidth;
-    cv[0].height = cv[0].clientHeight;
+    cv[0].width = `100%`;
+    cv[0].height = `100%`;
   } else if (track.kind === 'data') {
     const color = colorHash.hex(track.id);
     track.on('message', data => {
