@@ -116,15 +116,15 @@ $.getJSON('/token', function(data) {
     let mouseDown;
     let mouseCoordinates;
 
-    canvas.addEventListener('mousedown', () => {
+    $('canvas').on('mousedown', () => {
       mouseDown = true;
-    }, false);
+    });
 
-    canvas.addEventListener('mouseup', () => {
+    $('canvas').on('mouseup', () => {
       mouseDown = false;
-    }, false);
+    });
 
-    canvas.addEventListener('mousemove', event => {
+    $('canvas').on('mousemove', event => {
       const { offsetX: x, offsetY: y } = event;
       mouseCoordinates = { x, y };
 
@@ -137,7 +137,7 @@ $.getJSON('/token', function(data) {
           mouseCoordinates
         }));
       }
-    }, false);
+    });
 
     if (previewTracks) {
       connectOptions.tracks = previewTracks.concat(dataTrack);
