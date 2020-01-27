@@ -9,17 +9,33 @@ var previewTracks;
 var identity;
 var roomName;
 var canvas;
+var participantId;
 
 
 // Attach the Track to the DOM.
 function attachTrack(track, container) {
   if (track.kind === 'audio' || track.kind === 'video') {
-    container.appendChild(track.attach());
+    let newParticipantEl = container.appendChild(track.attach());
+    let cv = $(`<canvas id="${participantId}"></canvas>`);
+    cv[0].width = cv[0].clientWidth;
+    cv[0].height = cv[0].clientHeight;
+    cv.on('click', event => {
+      const { offsetX: x, offsetY: y } = event;
+      let mouseCoordinates = { x, y };
+
+      const color = colorHash.hex(dataTrack.id);
+      drawCircle(cv[0], color, x, y);
+
+      // dataTrack.send(JSON.stringify({
+      //   mouseCoordinates
+      // }));
+    });
+    newParticipantEl.appendChild(cv[0]);
   } else if (track.kind === 'data') {
     const color = colorHash.hex(track.id);
     track.on('message', data => {
       const { mouseCoordinates: { x, y } } = JSON.parse(data);
-      drawCircle(canvas, color, x, y);
+      drawCircle($(`#${participantId}`), color, x, y);
     });
   }
 }
@@ -57,6 +73,7 @@ function trackUnpublished(publication) {
 
 // A new RemoteParticipant joined the Room
 function participantConnected(participant, container) {
+  participantId = participant.sid;
   participant.tracks.forEach(function(publication) {
     trackPublished(publication, container);
   });
@@ -111,11 +128,9 @@ $.getJSON('/token', function(data) {
       logLevel: 'debug'
     };
 
-    let mouseCoordinates;
-
     $('canvas').on('click', event => {
       const { offsetX: x, offsetY: y } = event;
-      mouseCoordinates = { x, y };
+      let mouseCoordinates = { x, y };
 
       const color = colorHash.hex(dataTrack.id);
       drawCircle(canvas, color, x, y);
