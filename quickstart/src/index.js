@@ -18,10 +18,8 @@ function attachTrack(track, container) {
   } else if (track.kind === 'data') {
     const color = colorHash.hex(track.id);
     track.on('message', data => {
-      const { mouseDown, mouseCoordinates: { x, y } } = JSON.parse(data);
-      if (mouseDown) {
-        drawCircle(canvas, color, x, y);
-      }
+      const { mouseCoordinates: { x, y } } = JSON.parse(data);
+      drawCircle(canvas, color, x, y);
     });
   }
 }
@@ -83,7 +81,7 @@ $.getJSON('/token', function(data) {
   identity = data.identity;
   document.getElementById('room-controls').style.display = 'block';
 
-  canvas = document.getElementById('canvas');
+  canvas = $('canvas')[0];
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
   window.addEventListener('resize', () => {
@@ -113,30 +111,18 @@ $.getJSON('/token', function(data) {
       logLevel: 'debug'
     };
 
-    let mouseDown;
     let mouseCoordinates;
 
-    $('canvas').on('mousedown', () => {
-      mouseDown = true;
-    });
-
-    $('canvas').on('mouseup', () => {
-      mouseDown = false;
-    });
-
-    $('canvas').on('mousemove', event => {
+    $('canvas').on('click', event => {
       const { offsetX: x, offsetY: y } = event;
       mouseCoordinates = { x, y };
 
-      if (mouseDown) {
-        const color = colorHash.hex(dataTrack.id);
-        drawCircle(canvas, color, x, y);
+      const color = colorHash.hex(dataTrack.id);
+      drawCircle(canvas, color, x, y);
 
-        dataTrack.send(JSON.stringify({
-          mouseDown,
-          mouseCoordinates
-        }));
-      }
+      dataTrack.send(JSON.stringify({
+        mouseCoordinates
+      }));
     });
 
     if (previewTracks) {
