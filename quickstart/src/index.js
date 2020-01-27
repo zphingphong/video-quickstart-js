@@ -116,15 +116,15 @@ $.getJSON('/token', function(data) {
     let mouseDown;
     let mouseCoordinates;
 
-    window.addEventListener('mousedown', () => {
+    canvas.addEventListener('mousedown', () => {
       mouseDown = true;
     }, false);
 
-    window.addEventListener('mouseup', () => {
+    canvas.addEventListener('mouseup', () => {
       mouseDown = false;
     }, false);
 
-    window.addEventListener('mousemove', event => {
+    canvas.addEventListener('mousemove', event => {
       const { offsetX: x, offsetY: y } = event;
       mouseCoordinates = { x, y };
 
