@@ -17,8 +17,6 @@ function attachTrack(track, container) {
   if (track.kind === 'audio' || track.kind === 'video') {
     let newParticipantEl = container.appendChild(track.attach());
     let cv = $(`<canvas id="${participantId}"></canvas>`);
-    cv[0].width = cv[0].clientWidth;
-    cv[0].height = cv[0].clientHeight;
     cv.on('click', event => {
       const { offsetX: x, offsetY: y } = event;
       let mouseCoordinates = { x, y };
@@ -31,6 +29,8 @@ function attachTrack(track, container) {
       // }));
     });
     newParticipantEl.appendChild(cv[0]);
+    cv[0].width = cv[0].clientWidth;
+    cv[0].height = cv[0].clientHeight;
   } else if (track.kind === 'data') {
     const color = colorHash.hex(track.id);
     track.on('message', data => {
